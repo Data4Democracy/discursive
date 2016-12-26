@@ -61,6 +61,14 @@ There is a chance setting all this up gives you problems. How great a chance? I 
 
 I am a-ok with sharing access to the running instance of Kibana on a per-IP basis until we get new infra up. I am even happy to take your search term requests and type them into my functioning configuration of this thing and have them indexed if you want to send them to me. I will do this for free because we're fam. 
 
+## Twitter Collection Terms:
+
+#### Search Terms
+oath keeper  
+MAGA  
+cuck  
+CSPOA  
+
 ## Roadmap
 
 We have no formal roadmap yet, other than to say a new supporting infra is forthcoming and we are going to finish building a search/stream Twitter capability. That said, here's some suggested stuff until we get a community roadmap: 
