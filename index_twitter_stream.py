@@ -17,7 +17,10 @@ api = tweepy.API(auth)
 from esconn import esconn
 es = esconn()
 
-if len(sys.argv) == 2:
+if len(sys.argv) >= 2:
+    sys.exit('ERROR: Received 2 or more arguments. Expected 1: Topic file name')
+
+elif len(sys.argv) == 2:
     try:
         with open(sys.argv[1]) as f:
             topics = f.readlines()
