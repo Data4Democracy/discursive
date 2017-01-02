@@ -18,7 +18,13 @@ from esconn import esconn
 es = esconn()
 
 # Update with topics to follow
-TOPICS = ["breitbart", "cucks"]
+if sys.argv[1]:
+    f = open(sys.argv[1])
+else:
+    f = open('topics.txt')
+    
+topics = f.readlines()
+TOPICS = [topic.replace('\n', '').strip() for topic in topics]
 
 
 class StreamListener(tweepy.StreamListener):
@@ -26,7 +32,7 @@ class StreamListener(tweepy.StreamListener):
         super(StreamListener, self).__init__()
         self.counter = 0
         self.limit = 500
-        
+
     def on_status(self, status):
         if self.counter < self.limit:
             description = status.user.description
