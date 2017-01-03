@@ -17,13 +17,23 @@ api = tweepy.API(auth)
 from esconn import esconn
 es = esconn()
 
-# Update with topics to follow
-if sys.argv[1]:
-    f = open(sys.argv[1])
+if len(sys.argv) >= 2:
+    sys.exit('ERROR: Received 2 or more arguments. Expected 1: Topic file name')
+
+elif len(sys.argv) == 2:
+    try:
+        with open(sys.argv[1]) as f:
+            topics = f.readlines()
+    except:
+        sys.exit('ERROR: Expected topic file %s not found' % sys.argv[1])
 else:
-    f = open('topics.txt')
-    
-topics = f.readlines()
+    try:
+        with open('topics.txt') as f:
+            topics = f.readlines()
+    except:
+        sys.exit('ERROR: Default topics.txt not found. No alternate topic file  was provided')
+
+
 TOPICS = [topic.replace('\n', '').strip() for topic in topics]
 
 
