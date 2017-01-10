@@ -1,6 +1,3 @@
-from elasticsearch import Elasticsearch, RequestsHttpConnection
-from requests_aws4auth import AWS4Auth
-
 # go get elasticsearch connection
 from esconn import esconn
 es = esconn()
