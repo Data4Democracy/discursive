@@ -1,6 +1,7 @@
 import tweepy
 import config
-from elasticsearch import Elasticsearch,helpers
+from elasticsearch import helpers
+from esconn import esconn
 
 # unicode mgmt
 import sys
@@ -8,7 +9,6 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 # go get elasticsearch connection
-from esconn import esconn
 es = esconn()
 
 # auth & api handlers
@@ -20,6 +20,7 @@ api = tweepy.API(auth)
 topics = ["oath keeper"]
 search = api.search(q=topics, count=100)
 
+
 # function for screen_name, text, search topic
 def tweet_text():
     for tweet in search:
@@ -28,15 +29,15 @@ def tweet_text():
                     'name': tweet.user.screen_name,
                     'message': tweet.text,
                     'search_topic': topics,
-                    'description':tweet.user.description,
-                    'loc':tweet.user.location,
-                    'text':tweet.text,
-                    'user_created':tweet.user.created_at,
-                    'followers':tweet.user.followers_count,
-                    'id_str':tweet.id_str,
-                    'created':tweet.created_at,
-                    'retweet_count':tweet.retweet_count,
-                    'friends_count':tweet.user.friends_count
+                    'description': tweet.user.description,
+                    'loc': tweet.user.location,
+                    'text': tweet.text,
+                    'user_created': tweet.user.created_at,
+                    'followers': tweet.user.followers_count,
+                    'id_str': tweet.id_str,
+                    'created': tweet.created_at,
+                    'retweet_count': tweet.retweet_count,
+                    'friends_count': tweet.user.friends_count
                   }
 
 # bulk insert into twitter index
