@@ -90,3 +90,4 @@ ENV/
 
 # PyCharm
 .idea/
+/config_local.py

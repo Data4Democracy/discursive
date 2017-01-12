@@ -2,6 +2,7 @@ import tweepy
 import config
 from elasticsearch import helpers
 from esconn import esconn
+from tweet_model import map_tweet_for_es
 
 # unicode mgmt
 import sys
@@ -25,23 +26,10 @@ search = api.search(q=topics, count=100)
 def tweet_text():
     for tweet in search:
         if (not tweet.retweeted) and ('RT @' not in tweet.text):
-            yield {
-                    'name': tweet.user.screen_name,
-                    'message': tweet.text,
-                    'search_topic': topics,
-                    'description': tweet.user.description,
-                    'loc': tweet.user.location,
-                    'text': tweet.text,
-                    'user_created': tweet.user.created_at,
-                    'followers': tweet.user.followers_count,
-                    'id_str': tweet.id_str,
-                    'created': tweet.created_at,
-                    'retweet_count': tweet.retweet_count,
-                    'friends_count': tweet.user.friends_count
-                  }
+            yield map_tweet_for_es(tweet, topics)
 
 # bulk insert into twitter index
-helpers.bulk(es, tweet_text(), index='twitter', doc_type='message')
+helpers.bulk(es, tweet_text(), index='twitter', doc_type='tweets')
 
 # view the message field in the twitter index
 messages = es.search(index="twitter", size=1000, _source=['message'])
