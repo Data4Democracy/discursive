@@ -5,6 +5,7 @@ import os
 from esconn import esconn
 import s3conn
 from datetime import datetime as dt
+from tweet_model import map_tweet_for_es
 
 # unicode mgmt
 import sys
@@ -48,68 +49,52 @@ class StreamListener(tweepy.StreamListener):
 
     def on_status(self, status):
         if self.counter < self.limit:
-            description = status.user.description
-            loc = status.user.location
-            text = status.text
-            name = status.user.screen_name
-            user_created = status.user.created_at
-            followers = status.user.followers_count
-            id_str = status.id_str
-            created = status.created_at
-            retweet_count = status.retweet_count
-            friends_count = status.user.friends_count
+            extra = create_extra_fields(status)
+            tweet = map_tweet_for_es(status, TOPICS, extra)
+
+            # append to instance attribute and then index to elasticsearch (rethink if limit scales up significantly)
+            self.tweet_list.append(tweet)
+            dump_to_elastic(tweet)
+
+            print 'Tweet Count# ' + str(self.counter) + ' ' + json.dumps(fix_date_for_tweet(tweet))
         else:
             # if limit reached write saved tweets to s3
             dump_to_s3(self.tweet_list)
             return False
 
-        # check if retweet, assign attributes
-        if hasattr(status, 'retweeted_status'):
-            retweet = 'Y'
-            original_id = status.retweeted_status.user.id
-            original_name = status.retweeted_status.user.name
-        else:
-            retweet = 'N'
-            original_id = None
-            original_name = None
-
-        # check for hashtags and save as list
-        if hasattr(status, 'entities'):
-            hashtags = []
-            for tag in status.entities['hashtags']:
-                hashtags.append(tag['text'])
-            hashtags = json.dumps(hashtags)
-
-        # Elasticsearch document mapping setup
-        tweet = {
-                'description': description,
-                'loc': loc,
-                'text': text,
-                'name': name,
-                'user_created': user_created,
-                'followers': followers,
-                'id_str': id_str,
-                'created': created,
-                'retweet_count': retweet_count,
-                'friends_count': friends_count,
-                'retweet': retweet,
-                'original_id': original_id,
-                'original_name': original_name,
-                'hashtags': hashtags
-                }
-
-        # append to instance attribute and then index to elasticsearch (rethink if limit scales up significantly)
-        self.tweet_list.append(tweet)
-        dump_to_elastic(tweet)
-
         self.counter += 1
-        print 'Tweet Count# ' + str(self.counter) + ' ' + str(text)
 
     def on_error(self, status_code):
         # Twitter is rate limiting, exit
         if status_code == 420:
             print('Twitter rate limit error_code {}, exiting...'.format(status_code))
             return False
+
+
+def create_extra_fields(status):
+    # check if retweet, assign attributes
+    if hasattr(status, 'retweeted_status'):
+        retweet = 'Y'
+        original_id = status.retweeted_status.user.id
+        original_name = status.retweeted_status.user.name
+    else:
+        retweet = 'N'
+        original_id = None
+        original_name = None
+
+    # check for hashtags and save as list
+    if hasattr(status, 'entities'):
+        hashtags = []
+        for tag in status.entities['hashtags']:
+            hashtags.append(tag['text'])
+        hashtags = json.dumps(hashtags)
+
+    return {
+        'retweet': retweet,
+        'hashtags': hashtags,
+        'original_id': original_id,
+        'original_name': original_name
+    }
 
 
 def search():
@@ -135,7 +120,7 @@ def dump_to_s3(data):
 
 def dump_to_file(data, filename):
     # fix dates and dump to json
-    tweet_list = json.dumps(fix_dates_for_serialization(data))
+    tweet_list = json.dumps(fix_dates_for_dump(data))
 
     # get current working directory and write file to local path
     cwd = os.path.dirname(os.path.abspath(__file__))
@@ -148,12 +133,17 @@ def dump_to_file(data, filename):
         print str(ex)
 
 
-def fix_dates_for_serialization(data):
+def fix_dates_for_dump(data):
     # json.dumps can't natively serialize datetime obj converting to str before
     for tweet in data:
         tweet["user_created"] = str(tweet["user_created"])
         tweet["created"] = str(tweet["created"])
     return data
+
+def fix_date_for_tweet(tweet):
+    tweet["user_created"] = str(tweet["user_created"])
+    tweet["created"] = str(tweet["created"])
+    return tweet
 
 
 def create_key(filename, ext):
