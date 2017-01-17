@@ -2,7 +2,7 @@
 
 This tool searches Twitter for a given topic and stores the status, user and search topic in an Elasticsearch index.The intended use case is for social network composition and Tweet text analysis. 
 
-Sooner-than-later this work should be merged with [@bstarling's fantastic work](https://github.com/bstarling/twitter-framework) as a one-stop-shop for search/streaming. And, we have a nifty new backend/supporting infrastructure on the roadmap courtesy of [@nataliaking](https://github.com/nataliaking)! Therefore, **please do consider this a temporary bridge to a better place**, but useful in the meantime if you want to source domains for [scrape-right](https://github.com/Data4Democracy/scrape-right) tasking or start to build out lists of Twitter handles. 
+Sooner-than-later this work should be merged with [@bstarling's fantastic work](https://github.com/bstarling/twitter-framework) as a one-stop-shop for search/streaming. And, we have a nifty new backend/supporting infrastructure on the roadmap courtesy of [@nataliaking](https://github.com/nataliaking)! Therefore, **please do consider this a temporary bridge to a better place**.
 
 ## Setup
 
