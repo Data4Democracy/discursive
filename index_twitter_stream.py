@@ -1,9 +1,7 @@
 import json
 import tweepy
-import config
+from config import esconn, aws_config, twitter_config
 import os
-from esconn import esconn
-import s3conn
 from datetime import datetime as dt
 from tweet_model import map_tweet_for_es
 
@@ -13,12 +11,12 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 # Twitter auth and api call setup
-auth = tweepy.OAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
-auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
+auth = tweepy.OAuthHandler(twitter_config.CONSUMER_KEY, twitter_config.CONSUMER_SECRET)
+auth.set_access_token(twitter_config.ACCESS_TOKEN, twitter_config.ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
 # Get elasticsearch connection
-es = esconn()
+es = esconn.esconn()
 
 if len(sys.argv) >= 2:
     sys.exit('ERROR: Received 2 or more arguments. Expected 1: Topic file name')

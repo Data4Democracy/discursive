@@ -1,9 +1,9 @@
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from requests_aws4auth import AWS4Auth
-import config
+import aws_config
 
-host = config.es_host
-awsauth = AWS4Auth(config.access_id, config.access_secret, 'us-west-2', 'es')
+host = aws_config.es_host
+awsauth = AWS4Auth(aws_config.access_id, aws_config.access_secret, 'us-west-2', 'es')
 
 
 def esconn():
