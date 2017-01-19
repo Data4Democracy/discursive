@@ -17,18 +17,18 @@ auth.set_access_token(twitter_config.ACCESS_TOKEN, twitter_config.ACCESS_TOKEN_S
 api = tweepy.API(auth)
 
 # load Twitter screen_name & build a search
+#status_id_list = getStreamResultStatusIDs()
+status_id_list = [813859926485463040, 638748404827443201]
 
-#search = api.user_timeline('hadoopjax', count=2)
-#screen_name_list = ['hadoopjax']
-status_id_list = getStreamResultStatusIDs()
-
-search = api.statuses_lookup('813859926485463040')
+def getAttributesbyStatusID(handles):
+    for status in status_id_list:
+        search = api.statuses_lookup(status, include_entities='yes')
         for item in search:
             print item.id + ' ' + item.text
 
-#output = set()
-#for status in status_id_list:
-#    output.add(getAttributesbyStatusID(status_id_list))
+output = set()
+for status in status_id_list:
+    output.add(getAttributesbyStatusID(status_id_list))
 
-print getAttributesbyStatusID()
+print output
 
