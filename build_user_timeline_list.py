@@ -24,9 +24,40 @@ def getTweetsbyHandle(handles):
     for handle in screen_name_list:
         search = api.user_timeline(screen_name=handle, count=200, include_rts=True)
         for status in search:
-            print status.text + ' ' + handle
+            print status.text.encode('utf8') + ' ' + handle
+
+def getUserInfobyHandle(handles):
+    for handle in handles:
+        user_info = {handle: []}
+        try:
+            user = api.get_user(handle, include_entities=1)
+            user_info[handle].append(
+                {'active': 'True',
+                'bio': user.description,
+                'location': user.location,
+                'followers': user.followers_count,
+                'following': user.friends_count,
+                'image': user.profile_image_url,
+                })
+        except:
+            user_info[handle].append(
+                {'active': 'False',
+                'bio': 'none',
+                'location': 'none',
+                'followers': 'none',
+                'following': 'none',
+                'image': 'none',
+
+                })
+        yield user_info
+
 
 # print for review
-for handle in screen_name_list:
-    print getTweetsbyHandle(json.dumps(screen_name_list))
+#for handle in screen_name_list:
+#    print getTweetsbyHandle(json.dumps(screen_name_list))
 
+users_info = getUserInfobyHandle(screen_name_list)
+print users_info.next()
+with open('user_info.json', 'w') as fp:
+    for user_info in users_info:
+        json.dump(user_info, fp, indent=1)
