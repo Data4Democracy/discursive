@@ -63,3 +63,24 @@ infrastructure and associated codebase. This repo will then become home to curat
     - https://github.com/Data4Democracy/discursive/issues/17
 - Design, develop and maintain a community detection and network analysis capability for Twitter data (contact @alarcj or @zac_bohon on the #discursive-commdetect channel on Slack)
     - https://github.com/Data4Democracy/discursive/issues/4
+
+## Working with Docker
+
+- To run Discursive in a Docker container first install the version of Docker appropriate for your OS
+- Once you have Docker up and running, here are a few useful commands:
+    ```
+    # build the image
+    sudo docker build -t discursive .
+
+    # list all images
+    sudo docker images -a
+
+    # run the container in a little test; this one does an ls
+    sudo docker run discursive ls /discursive
+
+    # if you need to remove the image
+    sudo docker rmi -f 4f0d819f7a47
+
+    # run the container for reals; prints a bunch of junk
+    sudo docker run -it -v $HOME/.aws:/home/aws/.aws discursive python /discursive/index_twitter_stream.py
+    ```
