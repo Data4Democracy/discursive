@@ -5,6 +5,7 @@ RUN mkdir discursive
 COPY . /discursive
 
 RUN apk add --update \
+    tini \
     python \
     py2-pip && \
     adduser -D aws
@@ -16,6 +17,7 @@ RUN mkdir aws && \
     pip install awscli && \
     pip install -q --upgrade pip && \
     pip install -q --upgrade setuptools && \
-    pip install -q -r /discursive/requirements.txt
+    pip install -q -r /discursive/requirements.txt && \
+    crontab /discursive/crontab
 
-CMD ["python", "/discursive/index_twitter_stream.py", "/discursive/topics.txt"]
+CMD ["/sbin/tini", "--", "crond", "-f"]
