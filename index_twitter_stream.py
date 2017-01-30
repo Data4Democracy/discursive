@@ -6,6 +6,7 @@ from esconn import esconn
 import s3conn
 from datetime import datetime as dt
 from tweet_model import map_tweet_for_es
+from mongosetup import MongoConnection
 
 # unicode mgmt
 import sys
@@ -20,7 +21,11 @@ api = tweepy.API(auth)
 # Get elasticsearch connection
 es = esconn()
 
-if len(sys.argv) >= 2:
+#Get Mongo Collection
+mongo = MongoConnection(config.mongo_config)
+collection = mongo.get_collection("tweets")
+
+if len(sys.argv) > 2:
     sys.exit('ERROR: Received 2 or more arguments. Expected 1: Topic file name')
 
 elif len(sys.argv) == 2:
@@ -60,6 +65,7 @@ class StreamListener(tweepy.StreamListener):
         else:
             # if limit reached write saved tweets to s3
             dump_to_s3(self.tweet_list)
+            dump_to_mongo(self.tweet_list)
             return False
 
         self.counter += 1
@@ -116,6 +122,15 @@ def dump_to_s3(data):
 
     key = create_key(filename, ext)
     s3conn.write_file_to_s3(tweets_file, key)
+
+def dump_to_mongo(data):
+    try:
+        inserts = collection.insert_many(data)
+        print "{} tweets inserted into collection {}".format(len(inserts.inserted_ids), collection.full_name)
+    except Exception as ex:
+        print str(ex)
+    finally:
+        mongo.close_connection()
 
 
 def dump_to_file(data, filename):
