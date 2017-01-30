@@ -1,7 +1,6 @@
 import tweepy
-import config
+from config import esconn, aws_config, twitter_config
 from elasticsearch import helpers
-from esconn import esconn
 from tweet_model import map_tweet_for_es
 
 # unicode mgmt
@@ -10,11 +9,11 @@ reload(sys)
 sys.setdefaultencoding('utf8')
 
 # go get elasticsearch connection
-es = esconn()
+es = esconn.esconn()
 
 # auth & api handlers
-auth = tweepy.OAuthHandler(config.CONSUMER_KEY, config.CONSUMER_SECRET)
-auth.set_access_token(config.ACCESS_TOKEN, config.ACCESS_TOKEN_SECRET)
+auth = tweepy.OAuthHandler(twitter_config.CONSUMER_KEY, twitter_config.CONSUMER_SECRET)
+auth.set_access_token(twitter_config.ACCESS_TOKEN, twitter_config.ACCESS_TOKEN_SECRET)
 api = tweepy.API(auth)
 
 # load topics & build a search
@@ -34,3 +33,4 @@ helpers.bulk(es, tweet_text(), index='twitter', doc_type='tweets')
 # view the message field in the twitter index
 messages = es.search(index="twitter", size=1000, _source=['message'])
 print messages
+

@@ -1,0 +1,6 @@
+boto3==1.4.3
+botocore==1.4.93
+dataset==0.7.1
+elasticsearch==5.1.0
+requests_aws4auth==0.9
+tweepy==3.5.0

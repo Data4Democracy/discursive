@@ -1,6 +1,6 @@
 import boto3
 from botocore.client import ClientError
-import config
+import aws_config as config
 
 
 def get_s3_bucket(bucket_name):
