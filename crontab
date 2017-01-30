@@ -1,1 +1,1 @@
-* * * * *	python /discursive/test.py arg1 arg2
+0,15,30,45 * * * * python /discursive/index_twitter_stream.py /discursive/topics.txt
