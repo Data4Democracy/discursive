@@ -3,7 +3,7 @@ from config import eventador_config
 import uuid
 import json
 
-brokers = eventador_config.brokers
+brokers = eventador_config.config['brokers']
 consumer = KafkaConsumer(bootstrap_servers=brokers,
                          auto_offset_reset='largest',
                          value_deserializer=lambda m: json.loads(m, encoding='utf-8'),
@@ -12,15 +12,15 @@ consumer = KafkaConsumer(bootstrap_servers=brokers,
 
 consumer.subscribe(["tweets"])
 
-max = 10
-consumer.poll(max_records=max)
-msg_consumed_max = 0
+max_records = 10
+consumer.poll(30000, max_records=max_records)
+msg_consumed_count = 0
 
 for msg in consumer:
-    msg_consumed_max += 1
-    print(msg.key, msg.value)
+    msg_consumed_count += 1
+    print(msg_consumed_count, msg.value)
 
-    if msg_consumed_max >= max:
+    if msg_consumed_count >= max_records:
         break
 
 

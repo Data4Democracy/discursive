@@ -1,36 +1,47 @@
 from __future__ import print_function
+
 import sys
-import tweepy
-from elasticsearch import helpers
-from config import esconn, twitter_config
+
+import index_twitter_utils as utils
+import twitter_api_setup as api_setup
+from config import eventador_config
+from eventador import eventador_client
+from eventador import eventador_utils as eu
 from tweet_model import map_tweet_for_es
+
+import json
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-# go get elasticsearch connection
-es = esconn.esconn()
+def tweet_text(topics, count, producer, key):
+    search = api_setup.api.search(q=topics, count=count)
 
-# auth & api handlers
-auth = tweepy.OAuthHandler(twitter_config.CONSUMER_KEY, twitter_config.CONSUMER_SECRET)
-auth.set_access_token(twitter_config.ACCESS_TOKEN, twitter_config.ACCESS_TOKEN_SECRET)
-api = tweepy.API(auth)
+    def gen_search(counter = 0):
+        for tweet in search:
+            if (not tweet.retweeted) and ('RT @' not in tweet.text):
+                counter += 1
+                mapped_tweet = map_tweet_for_es(tweet, topics)
+                print('Tweet Count# ' + str(counter) + ' ' + json.dumps(utils.fix_date_for_tweet(mapped_tweet)))
+                yield mapped_tweet
 
-# load topics & build a search
-topics = ["oath keeper"]
-search = api.search(q=topics, count=100)
+    producer.send_all(key, gen_search())
 
 
-# function for screen_name, text, search topic
-def tweet_text():
-    for tweet in search:
-        if (not tweet.retweeted) and ('RT @' not in tweet.text):
-            yield map_tweet_for_es(tweet, topics)
+def do_twitter_search():
+    count = 1000
+    topics = ["oath keeper"]
 
-# bulk insert into twitter index
-helpers.bulk(es, tweet_text(), index='twitter', doc_type='tweets')
+    eventador_config.config['max_records'] = 20
+    client = eventador_client.EventadorClient(eventador_config.config)
+    producer = client.get_producer()
+    key = topics[0]
 
-# view the message field in the twitter index
-messages = es.search(index="twitter", size=1000, _source=['message'])
-print(messages)
+    es_publisher = eu.start_publishers(client, [eventador_config.es_config()], [key])
+    tweet_text(topics, count, producer, key)
+    eu.wait_for_publishers(es_publisher)
+
+
+do_twitter_search()
+
 
