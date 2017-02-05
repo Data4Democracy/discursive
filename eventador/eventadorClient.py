@@ -14,8 +14,8 @@ class EventadorClient():
     """
     def __init__(self, config):
         self.config = config
-        self.producer = ev.EventadorProducer(self.config['brokers'], self.config['topic'])
-        self.publisher = self.createPublisher()
+        self.producer = ev.EventadorProducer(self.config['brokers'], self.config['topic']) # puts messages on the topic
+        self.publisher = self.createPublisher() # subscribes to topic and publishes them somewhere else, here s3
 
     def createPublisher(self):
         publisher_type = self.config['publisher']

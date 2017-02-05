@@ -64,6 +64,7 @@ def do_twitter_stream(get=10):
     file_key = utils.create_key()
     es = esconn.esconn()
 
+    # Create config object for Stream Listener
     config = {
         'es': es,
         'file_key': file_key,
@@ -72,7 +73,10 @@ def do_twitter_stream(get=10):
         'max_records': get
     }
 
+    # Subscribe to topic in another thread before publishing messages and invoke the tweepy stream listener
     eventador = start_eventador(publisher.publish, [file_key], callback=invoke_stream_listener, c_args=config)
+
+    # Wait for eventador thread to do it's job
     eventador.join()
 
 do_twitter_stream()

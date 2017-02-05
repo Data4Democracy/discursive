@@ -9,7 +9,6 @@ class BaseEventadorConsumer(object):
     def __init__(self, config):
         self.config = config
         self.consumer = KafkaConsumer(bootstrap_servers=self.config['brokers'],
-                                      auto_offset_reset='largest',
                                       value_deserializer=lambda s: json.loads(s, encoding='utf-8'),
                                       group_id=uuid.uuid4())
 
@@ -23,6 +22,7 @@ class BaseEventadorConsumer(object):
         self.consumer.close()
 
 
+# Can create additional publishers that inherit from BaseEventador consumer need a publish method and a collect method
 class S3Publisher(BaseEventadorConsumer):
     def __init__(self, config):
         super(self.__class__, self).__init__(config)
@@ -38,6 +38,7 @@ class S3Publisher(BaseEventadorConsumer):
         except Exception as ex:
             print(str(ex))
 
+    # using the key to get records that match a particular polling of data in this case the filename in s3
     def collect(self, key):
         self.subscribe()
         self.poll()

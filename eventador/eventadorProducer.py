@@ -30,7 +30,7 @@ class EventadorProducer():
     def log_time(self):
         localtime = time.localtime()
         htime = time.strftime("%Y/%m/%d-%H%:%M%:%S", localtime)
-        print(htime)
+        print("Finished producing at {}\n".format(htime))
 
     def log_topic(self):
         print("Producing data to Eventador topic: " + self.topic)
