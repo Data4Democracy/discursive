@@ -1,5 +1,4 @@
-import json
-from elasticsearch import Elasticsearch, helpers
+from __future__ import print_function
 from config import esconn
 
 # get Elasticsearch connection
@@ -12,7 +11,5 @@ def getStreamResultHandles():
         output.add(doc['_source']['name'])
     return list(output)
 
-# write output to file
-#with open('stream_output_handles.txt', 'w') as f:
-#    f.write(str(getStreamResultHandles())
-print list(getStreamResultHandles())
+
+print(list(getStreamResultHandles()))

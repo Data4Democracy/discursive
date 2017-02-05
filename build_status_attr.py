@@ -1,3 +1,4 @@
+from __future__ import print_function
 import tweepy
 from config import esconn, twitter_config
 from get_stream_output_results import getStreamResultStatusIDs
@@ -26,4 +27,4 @@ def getAttributesbyStatusID(statuses):
 status_id_list = getStreamResultStatusIDs(size=10)
 output = {item for item in getAttributesbyStatusID(status_id_list)}
 
-print output
+print(output)

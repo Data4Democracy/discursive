@@ -1,11 +1,10 @@
+from __future__ import print_function
 import json
+import sys
 import tweepy
-from config import esconn, aws_config, twitter_config
-from elasticsearch import Elasticsearch,helpers
+from config import esconn, twitter_config
 from get_stream_output_handles import getStreamResultHandles
 
-# unicode mgmt
-import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
@@ -24,7 +23,8 @@ def getTweetsbyHandle(handles):
     for handle in screen_name_list:
         search = api.user_timeline(screen_name=handle, count=200, include_rts=True)
         for status in search:
-            print status.text.encode('utf8') + ' ' + handle
+            print(status.text.encode('utf8') + ' ' + handle)
+
 
 def getUserInfobyHandle(handles):
     for handle in handles:
@@ -52,12 +52,8 @@ def getUserInfobyHandle(handles):
         yield user_info
 
 
-# print for review
-#for handle in screen_name_list:
-#    print getTweetsbyHandle(json.dumps(screen_name_list))
-
 users_info = getUserInfobyHandle(screen_name_list)
-print users_info.next()
+print(users_info.next())
 with open('user_info.json', 'w') as fp:
     for user_info in users_info:
         json.dump(user_info, fp, indent=1)

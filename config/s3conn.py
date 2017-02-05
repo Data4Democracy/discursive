@@ -1,3 +1,4 @@
+from __future__ import print_function
 import boto3
 from botocore.client import ClientError
 import aws_config as config
@@ -27,4 +28,4 @@ def write_file_to_s3(data, key, bucket_name="discursive"):
     if bucket is not False:
         bucket.put_object(Key=key, Body=data)
     else:
-        print bucket_name + " bucket could not be found"
+        print(bucket_name + " bucket could not be found")

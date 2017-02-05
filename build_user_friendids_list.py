@@ -1,3 +1,4 @@
+from __future__ import print_function
 import time
 import tweepy
 from config import esconn, aws_config, twitter_config
@@ -27,11 +28,11 @@ def getFriendsbyHandle(handles):
         page_count = 0
         for page in tweepy.Cursor(api.friends_ids, screen_name=handle, count=5000).pages():
             page_count += 1
-            print 'Getting page {} for followers ids'.format(page_count)
+            print('Getting page {} for followers ids'.format(page_count))
             ids.extend(page)
         return ids
 
 # print for review
 for x in screen_name_list:
-    print (getFriendsbyHandle(screen_name_list))
+    print(getFriendsbyHandle(screen_name_list))
 

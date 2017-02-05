@@ -1,10 +1,9 @@
+from __future__ import print_function
+import sys
 import tweepy
-from config import esconn, aws_config, twitter_config
-from elasticsearch import Elasticsearch,helpers
+from config import esconn, twitter_config
 from get_stream_output_handles import getStreamResultHandles
 
-# unicode mgmt
-import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
@@ -26,10 +25,11 @@ def getFollowersbyHandle(handles):
     for handle in screen_name_list:
         search = tweepy.Cursor(api.followers, screen_name=handle, count=200).items()
         for user in search:
-            print user.screen_name
+            print(user.screen_name)
+
 
 output = set()
 for handle in screen_name_list:
     output.add(getFollowersbyHandle(screen_name_list))
 
-print output
+print(output)

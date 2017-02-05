@@ -1,10 +1,10 @@
+from __future__ import print_function
+import sys
 import tweepy
-from config import esconn, aws_config, twitter_config
 from elasticsearch import helpers
+from config import esconn, twitter_config
 from tweet_model import map_tweet_for_es
 
-# unicode mgmt
-import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
@@ -32,5 +32,5 @@ helpers.bulk(es, tweet_text(), index='twitter', doc_type='tweets')
 
 # view the message field in the twitter index
 messages = es.search(index="twitter", size=1000, _source=['message'])
-print messages
+print(messages)
 

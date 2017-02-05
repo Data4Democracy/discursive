@@ -1,3 +1,4 @@
+from __future__ import print_function
 # go get elasticsearch connection
 from esconn import esconn
 
@@ -42,6 +43,6 @@ es.indices.create(index='twitter', body=settings)
 
 # check if the index now exists
 if es.indices.exists(index='twitter'):
-    print 'Created the index'
+    print('Created the index')
 else:
-    print 'Something went wrong. The index was not created.'
+    print('Something went wrong. The index was not created.')
