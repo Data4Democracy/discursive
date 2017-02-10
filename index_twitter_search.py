@@ -32,7 +32,7 @@ def do_twitter_search():
     count = 1000
     topics = ["oath keeper"]
 
-    eventador_config.config['max_records'] = 20
+    eventador_config.config['max_records'] = 25
     client = eventador_client.EventadorClient(eventador_config.config)
     producer = client.get_producer()
     key = topics[0]

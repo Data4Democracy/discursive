@@ -17,9 +17,8 @@ class EventadorProducer():
         self.log_time()
 
     def send_all(self, key, data):
-        self.log_topic()
         [self.producer.send(self.topic, key=key, value=datum) for datum in data]
-
+        self.log_topic()
         # This is a blocking call
         self.flush()
         self.log_time()
@@ -38,4 +37,4 @@ class EventadorProducer():
         print("Finished producing at {}\n".format(htime))
 
     def log_topic(self):
-        print("Producing data to Eventador topic: " + self.topic)
+        print("\nProducing data to Eventador topic: " + self.topic)

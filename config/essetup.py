@@ -22,10 +22,10 @@ settings = {
                 'description': {'type': 'string'},
                 'loc': {'type': 'string'},
                 'text': {'type': 'string', 'store': 'true'},
-                'user_created': {'type': 'date', 'format': 'yyyy-MM-dd hh:mm:ss'},
+                'user_created': {'type': 'date', 'format': 'yyyy-MM-dd HH:mm:ss'},
                 'followers': {'type': 'long'},
                 'id_str': {'type': 'string'},
-                'created': {'type': 'date', 'format': 'yyyy-MM-dd hh:mm:ss'},
+                'created': {'type': 'date', 'format': 'yyyy-MM-dd HH:mm:ss'},
                 'retweet_count': {'type': 'long'},
                 'friends_count': {'type': 'long'},
 

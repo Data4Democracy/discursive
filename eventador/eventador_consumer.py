@@ -12,7 +12,9 @@ class BaseEventadorConsumer(object):
         self.config = config
         self.consumer = KafkaConsumer(bootstrap_servers=self.config['brokers'],
                                       value_deserializer=lambda s: json.loads(s, encoding='utf-8'),
+                                      auto_offset_reset="largest",
                                       group_id=uuid.uuid4())
+        self.subscribe()
 
     def subscribe(self):
         self.consumer.subscribe(self.config['topic'])
@@ -21,22 +23,18 @@ class BaseEventadorConsumer(object):
         self.consumer.poll(max_records=self.config['max_records'])
 
     def collect(self, key):
-        self.subscribe()
         self.poll()
 
         collected = 0
-        data = []
         for msg in self.consumer:
             collected += 1
 
             if msg.key == key:
-                data.append(msg.value)
+                yield msg.value
 
             if collected >= self.config['max_records']:
+                self.close()
                 break
-
-        self.close()
-        return data
 
     def close(self):
         self.consumer.close()
@@ -49,15 +47,12 @@ class S3Publisher(BaseEventadorConsumer):
 
     def publish(self, key):
         try:
-            data = json.dumps(self.collect(key))
-
             bucket = self.config['bucket']
-            s3conn.write_file_to_s3(data, key, bucket)
+            s3conn.write_file_to_s3(json.dumps([doc for doc in self.collect(key)]), key, bucket)
 
             print('{} written to {} bucket'.format(key, bucket))
         except Exception as ex:
             print(str(ex))
-
 
 
 class ElasticSearchPublisher(BaseEventadorConsumer):
@@ -75,11 +70,8 @@ class ElasticSearchPublisher(BaseEventadorConsumer):
                 yield index_dict
 
         try:
-            docs = self.collect(key)
-            print("{} messages collected".format(len(docs)))
-
             es = esconn.esconn()
-            helpers.bulk(es, docs_gen(docs), stats_only=True)
+            stats = helpers.bulk(es, docs_gen(self.collect(key)), stats_only=True)
+            print("{} messages indexed to elasticsearch".format(stats[0]))
         except Exception as ex:
             print(str(ex))
-

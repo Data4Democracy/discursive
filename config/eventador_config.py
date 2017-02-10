@@ -11,14 +11,16 @@ def add_publisher_config(common, config):
     return c
 
 
-s3_config = add_publisher_config(config, {
+def s3_config():
+    return add_publisher_config(config, {
     "publisher": "s3",
     "bucket": "testdiscursive",  # S3 Bucket
 })
 
 
 # Elasticsearch Config
-es_config = add_publisher_config(config, {
+def es_config():
+    return add_publisher_config(config, {
     "publisher": "es",
     "index": "twitter",
     "doc_type": "tweets"

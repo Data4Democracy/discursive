@@ -24,7 +24,8 @@ class StreamListener(tweepy.StreamListener):
         self.tweet_list = []
 
     def on_status(self, status):
-        if self.counter < self.limit:
+        self.counter += 1
+        if self.counter <= self.limit:
             extra = utils.create_extra_fields(status)
             tweet = map_tweet_for_es(status, self.config['twitter_topics'], extra)
             self.tweet_list.append(tweet)
@@ -33,7 +34,7 @@ class StreamListener(tweepy.StreamListener):
             self.config['producer'].send_all(self.config['file_key'], utils.fix_dates_for_dump(self.tweet_list))
             return False
 
-        self.counter += 1
+
 
     def on_error(self, status_code):
         # Twitter is rate limiting, exit
@@ -57,7 +58,7 @@ def do_twitter_stream(get=10):
 
     # add config for each kind of publisher available
     publishers = eu.start_publishers(client,
-                                  publisher_configs=[eventador_config.es_config()],
+                                  publisher_configs=[eventador_config.s3_config(), eventador_config.es_config()],
                                   publish_args=[listener_config['file_key']])
 
     invoke_stream_listener(listener_config)
